@@ -6,12 +6,9 @@ const showsList = document.querySelector('.tv-shows__list')
 // modal window
 const modal = document.querySelector('.modal')
 
-let API_KEY;
-
 // URL for source of pictures (posters)
 const IMG_URL = 'https://image.tmdb.org/t/p/w185_and_h278_bestv2'
 const DEFAULT_IMG = 'img/no-poster.jpg';
-
 
 //  Side menu interaction
 hamburger.addEventListener('click', () => {
@@ -95,12 +92,14 @@ class DBService {
         return await this.getData('test.json');
     }
 
-    // async downloadAPIKey() {
-    //     const response = await fetch('config/api.key');
-    //     API_KEY = await response.text();
-    // }
+    // attempt to get API key from file
+    async getAPIKey() {
+        const response = await fetch('/private/api-key.txt');
+        const apiKey = await response.text();
+    }
 }
 
+//  rendering of cards based on data received from a json file
 const renderCards = ({ results }) => {
     // use decomposition for each object with information about the film
     // also rename the object fields we need
@@ -133,3 +132,17 @@ const renderCards = ({ results }) => {
 }
 
 new DBService().getTestData().then(renderCards)
+
+// ---------- not finised yet -----------------------------
+// attempt to get API key from file
+
+async function getAPIKey() {
+    const response = await fetch('/private/api-key.json');
+    const obj = await response.json();
+    window['apiKey'] = await obj.apiKey
+}
+
+
+getAPIKey()
+console.log('window.apiKey: ', window.apiKey);
+const API_KEY = window.apiKey
