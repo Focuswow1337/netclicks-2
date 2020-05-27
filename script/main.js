@@ -6,6 +6,8 @@ const showsList = document.querySelector('.tv-shows__list')
 // modal window
 const modal = document.querySelector('.modal')
 
+let apiKey
+
 // URL for source of pictures (posters)
 const IMG_URL = 'https://image.tmdb.org/t/p/w185_and_h278_bestv2'
 const DEFAULT_IMG = 'img/no-poster.jpg';
@@ -91,12 +93,6 @@ class DBService {
     async  getTestData() {
         return await this.getData('test.json');
     }
-
-    // attempt to get API key from file
-    async getAPIKey() {
-        const response = await fetch('/private/api-key.txt');
-        const apiKey = await response.text();
-    }
 }
 
 //  rendering of cards based on data received from a json file
@@ -133,16 +129,13 @@ const renderCards = ({ results }) => {
 
 new DBService().getTestData().then(renderCards)
 
-// ---------- not finised yet -----------------------------
 // attempt to get API key from file
 
 async function getAPIKey() {
-    const response = await fetch('/private/api-key.json');
-    const obj = await response.json();
-    window['apiKey'] = await obj.apiKey
+    const response = await fetch('/private/api-key.txt');
+    apiKey = await response.text();
+    return apiKey
 }
 
-
-getAPIKey()
-console.log('window.apiKey: ', window.apiKey);
-const API_KEY = window.apiKey
+// check that our API key is written to the apiKey variable
+getAPIKey().then(console.log)
