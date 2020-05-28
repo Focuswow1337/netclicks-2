@@ -33,7 +33,7 @@ const SERVER = 'https://api.themoviedb.org/3'
 let API_KEY
 
 async function getAPIKey() {
-    const response = await fetch('/private/api-key.txt');
+    const response = await fetch('private/api-key.txt');
     API_KEY = await response.text();
     console.log('getAPIKey - API_KEY: ', API_KEY);
 }
