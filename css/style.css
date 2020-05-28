@@ -331,7 +331,7 @@ p {
     position: relative;
 }
 
-.active + .dropdown-list {
+.active+.dropdown-list {
     width: 100%;
     height: auto;
     line-height: 30px;
@@ -340,11 +340,11 @@ p {
     background: #4dd0e1;
 }
 
-.hide + .dropdown-list {
+.hide+.dropdown-list {
     height: 0;
 }
 
-.active + .dropdown-list:hover {
+.active+.dropdown-list:hover {
     background: #00bcd6;
 }
 
@@ -375,7 +375,7 @@ p {
     padding-right: 5px;
 }
 
-.left-menu:not(.openMenu) li > .dropdown-list {
+.left-menu:not(.openMenu) li>.dropdown-list {
     pointer-events: none;
     height: 0;
 }
@@ -915,6 +915,7 @@ main {
 }
 
 @-webkit-keyframes tap-upper-1 {
+
     0%,
     50%,
     100% {
@@ -929,6 +930,7 @@ main {
 }
 
 @keyframes tap-upper-1 {
+
     0%,
     50%,
     100% {
@@ -943,6 +945,7 @@ main {
 }
 
 @-webkit-keyframes tap-upper-2 {
+
     0%,
     50%,
     100% {
@@ -957,6 +960,7 @@ main {
 }
 
 @keyframes tap-upper-2 {
+
     0%,
     50%,
     100% {
@@ -971,6 +975,7 @@ main {
 }
 
 @-webkit-keyframes tap-upper-3 {
+
     0%,
     50%,
     100% {
@@ -985,6 +990,7 @@ main {
 }
 
 @keyframes tap-upper-3 {
+
     0%,
     50%,
     100% {
@@ -999,6 +1005,7 @@ main {
 }
 
 @-webkit-keyframes tap-upper-4 {
+
     0%,
     50%,
     100% {
@@ -1013,6 +1020,7 @@ main {
 }
 
 @keyframes tap-upper-4 {
+
     0%,
     50%,
     100% {
@@ -1048,15 +1056,18 @@ main {
         -webkit-transform: rotate(-30deg) scale(1);
         transform: rotate(-30deg) scale(1);
     }
+
     50% {
         -webkit-transform: rotate(360deg) scale(4);
         transform: rotate(360deg) scale(4);
         background-color: white;
     }
+
     80% {
         -webkit-transform: rotate(720deg) scale(0.8);
         transform: rotate(720deg) scale(0.8);
     }
+
     90%,
     100% {
         -webkit-transform: rotate(720deg) scale(1);
@@ -1070,15 +1081,18 @@ main {
         -webkit-transform: rotate(-30deg) scale(1);
         transform: rotate(-30deg) scale(1);
     }
+
     50% {
         -webkit-transform: rotate(360deg) scale(4);
         transform: rotate(360deg) scale(4);
         background-color: white;
     }
+
     80% {
         -webkit-transform: rotate(720deg) scale(0.8);
         transform: rotate(720deg) scale(0.8);
     }
+
     90%,
     100% {
         -webkit-transform: rotate(720deg) scale(1);
@@ -1111,6 +1125,7 @@ main {
         transform: translate(-200%, -100%) scale(0.2) rotate(-180deg);
         background-color: white;
     }
+
     70%,
     100% {
         -webkit-transform: translate(0, 0) scale(1) rotate(-360deg);
@@ -1125,6 +1140,7 @@ main {
         transform: translate(-200%, -100%) scale(0.2) rotate(-180deg);
         background-color: white;
     }
+
     70%,
     100% {
         -webkit-transform: translate(0, 0) scale(1) rotate(-360deg);
@@ -1147,6 +1163,7 @@ div:after {
         transform: translate(200%, 100%) scale(0.2) rotate(180deg);
         background-color: white;
     }
+
     70%,
     100% {
         -webkit-transform: translate(0, 0) scale(1) rotate(360deg);
@@ -1161,6 +1178,7 @@ div:after {
         transform: translate(200%, 100%) scale(0.2) rotate(180deg);
         background-color: white;
     }
+
     70%,
     100% {
         -webkit-transform: translate(0, 0) scale(1) rotate(360deg);

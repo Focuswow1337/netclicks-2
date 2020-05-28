@@ -1,16 +1,35 @@
-// DOM elements to work with
+//  ------ DOM elements to work with ----------
+// menu
 const leftMenu = document.querySelector('.left-menu')
 const hamburger = document.querySelector('.hamburger')
 //  ul with a list of cards
 const showsList = document.querySelector('.tv-shows__list')
+// loader
+const tvShow = document.querySelector('.tv-shows')
 // modal window
 const modal = document.querySelector('.modal')
+const tvCardImg = document.querySelector('.tv-card__img')
+const modalTitle = document.querySelector('.modal__title')
+const genresList = document.querySelector('.genres-list')
+const rating = document.querySelector('.rating')
+const description = document.querySelector('.description')
+const modalLink = document.querySelector('.modal__link')
+const preloader = document.querySelector('.preloader')
+//  search form
+const searchForm = document.querySelector('.search__form')
+const searchFormInput = document.querySelector('.search__form-input')
 
-let apiKey
+//  Loder
+const loading = document.createElement('div')
+loading.classList = 'loading'
+
 
 // URL for source of pictures (posters)
 const IMG_URL = 'https://image.tmdb.org/t/p/w185_and_h278_bestv2'
-const DEFAULT_IMG = 'img/no-poster.jpg';
+const DEFAULT_IMG = 'img/no-poster.jpg'
+const SERVER = 'https://api.themoviedb.org/3'
+// API-key
+let API_KEY = 'e95dfdbeae69e03d98bb740ffb1ce4e1'
 
 //  Side menu interaction
 hamburger.addEventListener('click', () => {
@@ -62,8 +81,27 @@ showsList.addEventListener('click', e => {
     const tvCard = target.closest('.tv-card');
 
     if (tvCard) {
-        document.body.style.overflow = 'hidden';
-        modal.classList.remove('hide');
+        // preloader
+        // preloader.style.display = 'block'
+        //  server request
+        // new DBService().getTestCard()
+        //  movie id
+        const id = tvCard.dataset.idtv
+        console.log('tvCard - id: ', id);
+        new DBService().getTvShow(id).then(response => {
+            tvCardImg.src = IMG_URL + response.poster_path
+            modalTitle.textContent = response.name
+            genresList.innerHTML = response.genres
+                .map(genr => `<li>${genr.name}</li>`)
+                .join('')
+            rating.textContent = response.vote_average
+            description.textContent = response.overview
+            modalLink.href = response.homepage
+        }).then(() => {
+            document.body.style.overflow = 'hidden';
+            preloader.style.display = 'none'
+            modal.classList.remove('hide')
+        })
     }
 }, false);
 
@@ -90,8 +128,23 @@ class DBService {
         }
     }
 
-    async  getTestData() {
-        return await this.getData('test.json');
+    getTestData() {
+        return this.getData('test.json')
+    }
+
+    getTestCard() {
+        return this.getData('card.json')
+    }
+
+    getSearchResult(query) {
+        const url = `${SERVER}/search/tv/?api_key=${API_KEY}&language=ru-RU&query=${query}`
+        return this.getData(url)
+    }
+
+    getTVShow(id) {
+        const url = `${SERVER}/tv/${id}?api_key=${API_KEY}&language=ru-RU`
+        console.log(' getTVShow - url: ', url);
+        return this.getData(url)
     }
 }
 
@@ -103,7 +156,8 @@ const renderCards = ({ results }) => {
         vote_average: vote,
         poster_path: poster,
         backdrop_path: backdrop,
-        name: title
+        name: title,
+        id
     }) => {
 
         const posterURI = poster ? `${IMG_URL + poster}` : DEFAULT_IMG;
@@ -113,7 +167,7 @@ const renderCards = ({ results }) => {
         const card = document.createElement('li');
         card.classList.add('tv-shows__item');
         card.innerHTML = `
-            <a href="#" class="tv-card">
+            <a href="#" data-idtv="${id}" class="tv-card">
                 ${voteEl}
                 <img class="tv-card__img"
                      src="${posterURI}"
@@ -122,20 +176,38 @@ const renderCards = ({ results }) => {
                 <h4 class="tv-card__head">${title}</h4>
             </a>
         `;
-
+        loading.remove()
         showsList.append(card);
     });
 }
 
-new DBService().getTestData().then(renderCards)
+//  Movie Search Request Processing
+searchForm.addEventListener('submit', event => {
+    event.preventDefault()
+    const value = searchFormInput.value.trim()
+    if (value) {
+        tvShow.append(loading)
+        new DBService().getSearchResult(value).then(renderCards)
+    }
+    searchFormInput.value = ''
+})
 
-// attempt to get API key from file
+{
+    //  retrieving movie data from a local json file
+    // tvShow.append(loading)
+    // new DBService().getTestData().then(renderCards)
+}
+
+// get the API key from the local file
 
 async function getAPIKey() {
     const response = await fetch('/private/api-key.txt');
-    apiKey = await response.text();
-    return apiKey
+    API_KEY = await response.text();
 }
 
 // check that our API key is written to the apiKey variable
-getAPIKey().then(console.log)
+getAPIKey()
+
+console.log('API_KEY: ', API_KEY);
+
+// new DBService().getTVShow(160)
