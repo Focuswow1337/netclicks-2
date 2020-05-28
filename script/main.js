@@ -18,6 +18,8 @@ const preloader = document.querySelector('.preloader')
 //  search form
 const searchForm = document.querySelector('.search__form')
 const searchFormInput = document.querySelector('.search__form-input')
+// to display messages
+const tvShowsHead = document.querySelector('.tv-shows__head')
 
 //  Loder
 const loading = document.createElement('div')
@@ -167,6 +169,7 @@ const renderCards = ({ results }) => {
     // also rename the object fields we need
 
     showsList.innerHTML = ''
+    tvShowsHead.textContent = `Результат поиска `
     if (results.length) {
         results.forEach(({
             vote_average: vote,
@@ -197,7 +200,8 @@ const renderCards = ({ results }) => {
         })
     } else {
         loading.remove()
-        showsList.innerHTML = '<span>По вашему запросу ничего не найдено</span>'
+        tvShowsHead.textContent = 'По вашему запросу ничего не найдено'
+        // showsList.innerHTML = '<span>По вашему запросу ничего не найдено</span>'
     }
 }
 
