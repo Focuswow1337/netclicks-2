@@ -23,13 +23,24 @@ const searchFormInput = document.querySelector('.search__form-input')
 const loading = document.createElement('div')
 loading.classList = 'loading'
 
-
 // URL for source of pictures (posters)
 const IMG_URL = 'https://image.tmdb.org/t/p/w185_and_h278_bestv2'
 const DEFAULT_IMG = 'img/no-poster.jpg'
 const SERVER = 'https://api.themoviedb.org/3'
-// API-key
-let API_KEY = 'e95dfdbeae69e03d98bb740ffb1ce4e1'
+
+// get the API key from the local file
+
+let API_KEY
+
+async function getAPIKey() {
+    const response = await fetch('/private/api-key.txt');
+    API_KEY = await response.text();
+    console.log('getAPIKey - API_KEY: ', API_KEY);
+}
+
+// check that our API key is written to the apiKey variable
+getAPIKey()
+
 
 //  Side menu interaction
 hamburger.addEventListener('click', () => {
@@ -45,6 +56,7 @@ document.body.addEventListener('click', (event) => {
 })
 
 leftMenu.addEventListener('click', event => {
+    event.preventDefault()
     const target = event.target
     const dropdown = target.closest('.dropdown')
 
@@ -81,27 +93,30 @@ showsList.addEventListener('click', e => {
     const tvCard = target.closest('.tv-card');
 
     if (tvCard) {
-        // preloader
-        // preloader.style.display = 'block'
-        //  server request
-        // new DBService().getTestCard()
-        //  movie id
+        preloader
+        preloader.style.display = 'block'
+        //  getting movie id
         const id = tvCard.dataset.idtv
-        console.log('tvCard - id: ', id);
-        new DBService().getTvShow(id).then(response => {
-            tvCardImg.src = IMG_URL + response.poster_path
-            modalTitle.textContent = response.name
-            genresList.innerHTML = response.genres
-                .map(genr => `<li>${genr.name}</li>`)
-                .join('')
-            rating.textContent = response.vote_average
-            description.textContent = response.overview
-            modalLink.href = response.homepage
-        }).then(() => {
-            document.body.style.overflow = 'hidden';
-            preloader.style.display = 'none'
-            modal.classList.remove('hide')
-        })
+        //  server request
+        new DBService().getTvShow(id)
+            .then(({ poster_path, name, genres, vote_average, overview, homepage }) => {
+                tvCardImg.src = IMG_URL + poster_path
+                modalTitle.textContent = name
+                genresList.innerHTML = genres
+                    .map(genr => `<li>${genr.name}</li>`)
+                    .join('')
+                rating.textContent = vote_average
+                description.textContent = overview
+                if (homepage) {
+                    modalLink.href = homepage
+                } else {
+                    modalLink.textContent = 'Официальная страница отсутствует'
+                }
+            }).then(() => {
+                document.body.style.overflow = 'hidden';
+                preloader.style.display = 'none'
+                modal.classList.remove('hide')
+            })
     }
 }, false);
 
@@ -141,9 +156,8 @@ class DBService {
         return this.getData(url)
     }
 
-    getTVShow(id) {
+    getTvShow(id) {
         const url = `${SERVER}/tv/${id}?api_key=${API_KEY}&language=ru-RU`
-        console.log(' getTVShow - url: ', url);
         return this.getData(url)
     }
 }
@@ -152,21 +166,24 @@ class DBService {
 const renderCards = ({ results }) => {
     // use decomposition for each object with information about the film
     // also rename the object fields we need
-    results.forEach(({
-        vote_average: vote,
-        poster_path: poster,
-        backdrop_path: backdrop,
-        name: title,
-        id
-    }) => {
 
-        const posterURI = poster ? `${IMG_URL + poster}` : DEFAULT_IMG;
-        const backdropURI = backdrop ? `${IMG_URL + backdrop}` : '';
-        const voteEl = vote ? `<span class="tv-card__vote">${vote}</span>` : '';
+    showsList.innerHTML = ''
+    if (results.length) {
+        results.forEach(({
+            vote_average: vote,
+            poster_path: poster,
+            backdrop_path: backdrop,
+            name: title,
+            id
+        }) => {
 
-        const card = document.createElement('li');
-        card.classList.add('tv-shows__item');
-        card.innerHTML = `
+            const posterURI = poster ? `${IMG_URL + poster}` : DEFAULT_IMG;
+            const backdropURI = backdrop ? `${IMG_URL + backdrop}` : '';
+            const voteEl = vote ? `<span class="tv-card__vote">${vote}</span>` : '';
+
+            const card = document.createElement('li');
+            card.classList.add('tv-shows__item');
+            card.innerHTML = `
             <a href="#" data-idtv="${id}" class="tv-card">
                 ${voteEl}
                 <img class="tv-card__img"
@@ -176,9 +193,13 @@ const renderCards = ({ results }) => {
                 <h4 class="tv-card__head">${title}</h4>
             </a>
         `;
+            loading.remove()
+            showsList.append(card);
+        })
+    } else {
         loading.remove()
-        showsList.append(card);
-    });
+        showsList.innerHTML = '<span>По вашему запросу ничего не найдено</span>'
+    }
 }
 
 //  Movie Search Request Processing
@@ -197,17 +218,3 @@ searchForm.addEventListener('submit', event => {
     // tvShow.append(loading)
     // new DBService().getTestData().then(renderCards)
 }
-
-// get the API key from the local file
-
-async function getAPIKey() {
-    const response = await fetch('/private/api-key.txt');
-    API_KEY = await response.text();
-}
-
-// check that our API key is written to the apiKey variable
-getAPIKey()
-
-console.log('API_KEY: ', API_KEY);
-
-// new DBService().getTVShow(160)
