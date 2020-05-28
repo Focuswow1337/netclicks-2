@@ -1,3 +1,5 @@
+'use strict'
+
 //  ------ DOM elements to work with ----------
 // menu
 const leftMenu = document.querySelector('.left-menu')
@@ -39,8 +41,40 @@ async function getAPIKey() {
     API_KEY = await response.text();
 }
 
-// check that our API key is written to the apiKey variable
+// API key is written to the apiKey variable
 getAPIKey()
+
+
+//  create DBServise class
+
+class DBService {
+    async getData(url) {
+        const response = await fetch(url);
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error(`Не удалось получить данные по адресу ${url}`);
+        }
+    }
+
+    getTestData() {
+        return this.getData('test.json')
+    }
+
+    getTestCard() {
+        return this.getData('card.json')
+    }
+
+    getSearchResult(query) {
+        const url = `${SERVER}/search/tv/?api_key=${API_KEY}&language=ru-RU&query=${query}`
+        return this.getData(url)
+    }
+
+    getTvShow(id) {
+        const url = `${SERVER}/tv/${id}?api_key=${API_KEY}&language=ru-RU`
+        return this.getData(url)
+    }
+}
 
 
 //  Side menu interaction
@@ -132,36 +166,16 @@ modal.addEventListener('click', ({ target }) => {
     }
 });
 
-//  create DBServise class
-
-class DBService {
-    async getData(url) {
-        const response = await fetch(url);
-        if (response.ok) {
-            return response.json();
-        } else {
-            throw new Error(`Не удалось получить данные по адресу ${url}`);
-        }
+//  Movie Search Request Processing
+searchForm.addEventListener('submit', event => {
+    event.preventDefault()
+    const value = searchFormInput.value.trim()
+    if (value) {
+        tvShow.append(loading)
+        new DBService().getSearchResult(value).then(renderCards)
     }
-
-    getTestData() {
-        return this.getData('test.json')
-    }
-
-    getTestCard() {
-        return this.getData('card.json')
-    }
-
-    getSearchResult(query) {
-        const url = `${SERVER}/search/tv/?api_key=${API_KEY}&language=ru-RU&query=${query}`
-        return this.getData(url)
-    }
-
-    getTvShow(id) {
-        const url = `${SERVER}/tv/${id}?api_key=${API_KEY}&language=ru-RU`
-        return this.getData(url)
-    }
-}
+    searchFormInput.value = ''
+})
 
 //  rendering of cards based on data received from a json file
 const renderCards = ({ results }) => {
@@ -204,17 +218,6 @@ const renderCards = ({ results }) => {
         // showsList.innerHTML = '<span>По вашему запросу ничего не найдено</span>'
     }
 }
-
-//  Movie Search Request Processing
-searchForm.addEventListener('submit', event => {
-    event.preventDefault()
-    const value = searchFormInput.value.trim()
-    if (value) {
-        tvShow.append(loading)
-        new DBService().getSearchResult(value).then(renderCards)
-    }
-    searchFormInput.value = ''
-})
 
 {
     //  retrieving movie data from a local json file
