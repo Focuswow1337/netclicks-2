@@ -35,7 +35,6 @@ let API_KEY
 async function getAPIKey() {
     const response = await fetch('private/api-key.txt');
     API_KEY = await response.text();
-    console.log('getAPIKey - API_KEY: ', API_KEY);
 }
 
 // check that our API key is written to the apiKey variable
